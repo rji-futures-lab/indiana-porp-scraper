@@ -12,6 +12,7 @@ class RestrainingOrder(Model):
 	born = IntegerField(null=True)
 	date_issued = DateField(null=True)
 	date_served = DateField(null=True)
+	not_served = BooleanField(default=False)
 	attempted_serve = DateField(null=True)
 	officer_notes = CharField(null=True)
 	order_dismissed_on = DateField(null=True)
