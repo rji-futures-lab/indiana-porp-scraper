@@ -5,7 +5,7 @@ from peewee import *
 db = SqliteDatabase('restraining-orders.db')
 
 class RestrainingOrder(Model):
-	id = IntegerField()
+	id = IntegerField(primary_key=True)
 	case_number = CharField()
 	name = CharField()
 	city = CharField(null=True)
