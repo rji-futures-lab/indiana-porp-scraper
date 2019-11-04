@@ -3,7 +3,7 @@ import multiprocessing
 import os
 from time import sleep
 from recent_protection_orders import query
-from page_scrape import make_requests
+from cache_details import make_requests
 
 
 def get_chunks(num_chunks):
