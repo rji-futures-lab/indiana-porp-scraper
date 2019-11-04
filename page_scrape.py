@@ -17,16 +17,16 @@ def make_requests(ids):
 			except requests.exceptions.HTTPError as e:
 				print(f'GET request failed for {i}')
 				print(f'  {e}')
-				sleep(60)
+				sleep(120)
 				make_requests(ids)
 			else:
 				html = r.content
 				with open(f".cache/SearchDetail/{i}.html", 'wb') as file:
 					file.write(html)
 				duration = datetime.now() - start
-				print(f'  cached ({duration})')
-				sleep(4)
-				ids.remove(i)
+				print(f'  cached {i} ({duration})')
+				sleep(5)
+			ids.remove(i)
 
 
 def main():
