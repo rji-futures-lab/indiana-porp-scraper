@@ -17,7 +17,7 @@ def make_requests(ids):
 			except requests.exceptions.HTTPError as e:
 				print(f'GET request failed for {i}')
 				print(f'  {e}')
-				sleep(30)
+				sleep(60)
 				make_requests(ids)
 			else:
 				html = r.content
@@ -25,7 +25,7 @@ def make_requests(ids):
 					file.write(html)
 				duration = datetime.now() - start
 				print(f'  cached ({duration})')
-				sleep(3)
+				sleep(4)
 				ids.remove(i)
 
 
