@@ -16,15 +16,14 @@ def make_requests(ids):
 				r.raise_for_status()
 			except requests.exceptions.HTTPError as e:
 				print(f'  {e}')
-				sleep(180)
-				make_requests(ids)
+				sleep(120)
 			else:
 				html = r.content
 				with open(f".cache/SearchDetail/{i}.html", 'wb') as file:
 					file.write(html)
 				duration = datetime.now() - start
 				print(f'  cached {i} ({duration})')
-				sleep(3)
+				sleep(4)
 
 
 def main():
