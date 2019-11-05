@@ -15,15 +15,10 @@ def get_chunks(num_chunks):
         yield query[i:i+chunk_size]
 
 
-def handle_chunk(ids):
-    make_requests(ids)
-    sleep(30)
-    
-
 def download_all_chunks(chunks):
     num_pools = len(chunks)
     with multiprocessing.Pool(num_pools) as pool:
-        pool.map(handle_chunk, chunks)
+        pool.map(make_requests, chunks)
 
 
 if __name__ == "__main__":
