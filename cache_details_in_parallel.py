@@ -17,7 +17,7 @@ def get_chunks(num_chunks):
 
 def handle_chunk(ids):
     make_requests(ids)
-    sleep(15)
+    sleep(30)
     
 
 def download_all_chunks(chunks):

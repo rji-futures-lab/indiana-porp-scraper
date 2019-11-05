@@ -8,16 +8,15 @@ import requests
 def make_requests(ids):
 	with requests.Session() as sesh:
 		for i in ids:
+			ids.remove(i)
 			start = datetime.now()
 			url = f'https://mycourts.in.gov/PORP/Search/Detail?ID={i}'
-			print(f'Getting {url}...')
 			r = sesh.get(url)
 			try:
 				r.raise_for_status()
 			except requests.exceptions.HTTPError as e:
-				print(f'GET request failed for {i}')
 				print(f'  {e}')
-				sleep(120)
+				sleep(180)
 				make_requests(ids)
 			else:
 				html = r.content
@@ -25,8 +24,7 @@ def make_requests(ids):
 					file.write(html)
 				duration = datetime.now() - start
 				print(f'  cached {i} ({duration})')
-				sleep(5)
-			ids.remove(i)
+				sleep(3)
 
 
 def main():
