@@ -2,34 +2,56 @@ import argparse
 import multiprocessing
 import os
 from time import sleep
+import requests
 from recent_protection_orders import query
-from cache_details import make_requests
 
 
-def get_chunks(num_chunks):
-    total = query.count()
-    chunk_size = round(total / num_chunks)
-    # For item i in a range that is the count of the query,
-    for i in range(0, total, chunk_size):
-        # Create an index range for l of n items:
-        yield query[i:i+chunk_size]
+session = None
 
 
-def download_all_chunks(chunks):
-    num_pools = len(chunks)
-    with multiprocessing.Pool(num_pools) as pool:
-        pool.map(make_requests, chunks)
+def set_global_session():
+    global session
+    if not session:
+        session = requests.Session()
+
+
+def get_session():
+    return session
+
+
+def cache_page(identifier):
+    sleep(3)
+    url = f'https://mycourts.in.gov/PORP/Search/Detail?ID={identifier}'
+    r = get_session().get(url)
+
+    try:
+        r.raise_for_status()
+    except requests.exceptions.HTTPError as e:
+        print(f'  {e}')
+        sleep(120)
+        session = requests.Session()
+    else:
+        html = r.content
+        file_path = f".cache/SearchDetail/{identifier}.html"
+        with open(file_path, 'wb') as file:
+            file.write(html)
+        return print(f'  Cached content from {url} (in {id(get_session())})')
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument('num_processes', type=int)
-    args = parser.parse_args()
-    
-    os.makedirs('.cache/SearchDetail/', exist_ok=True)
-    
-    chunks = list(
-        get_chunks(args.num_processes)
+    parser = argparse.ArgumentParser(
+        description="Cache each protection order details page.",
+    )
+    parser.add_argument(
+        '--num_processes', type=int, default=os.cpu_count()
     )
 
-    download_all_chunks(chunks)
+    pool_config = {
+        'processes': parser.parse_args().num_processes,
+        'initializer': set_global_session,
+    }
+    
+    os.makedirs('.cache/SearchDetail/', exist_ok=True)
+
+    with multiprocessing.Pool(**pool_config) as pool:
+        pool.map(cache_page, query)
