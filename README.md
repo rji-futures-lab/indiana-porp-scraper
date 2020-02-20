@@ -1,12 +1,6 @@
-# Indiana PORP Data
+# Indiana PORP Scraper
 
 Code for collecting protection order registry data for the state of Indiana.
-
-## Downloads
-
-Download the cached html files from here: <https://rji-public-bucket.s3.us-east-2.amazonaws.com/cache.zip>
-
-Download the sqlite database here: <https://rji-public-bucket.s3.us-east-2.amazonaws.com/restraining-orders.db>
 
 ## ETL Process
 
@@ -36,7 +30,7 @@ python cache_details.py
 
 By default, cache_details.py will loop over all the restraining orders (excluding those already in the cache) and make a `GET` request for each order's details page.
 
-When run as a single process, this script will take an inordinate amount of time. The problem is that the server behind mycourts.in.gov takes between 20 seconds to over a minute to respond, even to these simple `GET` requests. To collect the entire data set, which is over half a million records, the script would have to run non-stop for six to seven months.
+When running the scraper as a single process, this script will take an inordinate amount of time. The main problem is the server behind mycourts.in.gov, which can take up to a minute to respond even to these simple `GET` requests. To collect the entire data set, which is over half a million records, the script would have to run non-stop for six to seven months.
 
 We can speed all this up by running parallel processes for caching these details pages. In so doing, we also need to make sure we aren't duplicating our requests.
 
@@ -46,7 +40,7 @@ Thus, cache_details.py accepts a `start-id` and/or `end-id`, allowing you to set
 python cache_details.py -s=1296495 -e=1604007
 ```
 
-For great convenience, invoke another script cache_details_in_parallel.py, specifying the number of parallel processes you want. Trial and error suggests that mycourts.in.gov will tolerate around 10 parallel processes without throwing too many `500` responses.
+For greater convenience, invoke another script: cache_details_in_parallel.py, specifying the number of parallel processes you want. Trial and error suggests that mycourts.in.gov will tolerate around 10 parallel processes without throwing too many `500` responses.
 
 ```sh
 python cache_details_in_parallel.py 10
@@ -54,4 +48,4 @@ python cache_details_in_parallel.py 10
 
 It's enough to make you wonder how many concurrent human users this website—ostensibly intended to support the law enforcement and court systems of an entire state—can actually support.
 
-**Important Note:** When cache_details.py or cache_details_in_parallel.py catches a 500 response, it will skip that restraining order and continue to run. As such, it's a good idea to re-run either details page caching script in order to see if you get good responses the second time around. If not, then these remaining restraining orders probably warrant further investigation by a human operator.
+**Important Note:** When cache_details.py or cache_details_in_parallel.py catches a 500 response, it will skip that restraining order and continue to run. As such, it's a good idea to re-run the details page caching script in order to see if you get good responses the second time around. If not, then these remaining restraining orders probably warrant further investigation by a human operator.
